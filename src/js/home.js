@@ -92,6 +92,11 @@ fetch('https://randomuser.me/api/')
 		return data;
 	}
 
+	const $form = document.querySelector('#form')
+	$form.addEventListener('submit', (event) => {
+		event.preventDefault()
+	})
+
 	const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action')
 	const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama')
 	const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation')
@@ -116,6 +121,21 @@ fetch('https://randomuser.me/api/')
 		return $html.body.children[0]
 	}	
 
+	function addEventClick($element){
+
+		//con js
+
+		$element.addEventListener('click', () => {
+			alert('click')
+		})
+
+		//con jquery
+
+		// $('.element').on('click', function(){
+		// 	alert('click')
+		// })
+	}
+
 	function renderMovieList(list, $container){
 
 		//actionList.data.movies
@@ -124,6 +144,7 @@ fetch('https://randomuser.me/api/')
 			const HTMLString = videoItemTemplate(movie)
 			const movieElement = createTemplate(HTMLString)
 			$container.append(movieElement)
+			addEventClick(movieElement)
 		})
 	}
 
@@ -139,7 +160,7 @@ fetch('https://randomuser.me/api/')
 
 	const $featuringContainer = document.querySelector('#featuring')
 
-	const $form = document.querySelector('#form')
+	
 	const $home = document.querySelector('#home')
 
 
