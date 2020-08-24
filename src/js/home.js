@@ -93,8 +93,11 @@ fetch('https://randomuser.me/api/')
 	}
 
 	const $form = document.querySelector('#form')
+	const $home = document.querySelector('#home')
+
 	$form.addEventListener('submit', (event) => {
-		event.preventDefault()
+		event.preventDefault();
+		$home.classList.add('search-active')
 	})
 
 	const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action')
@@ -126,7 +129,7 @@ fetch('https://randomuser.me/api/')
 		//con js
 
 		$element.addEventListener('click', () => {
-			alert('click')
+			showModal()
 		})
 
 		//con jquery
@@ -161,7 +164,7 @@ fetch('https://randomuser.me/api/')
 	const $featuringContainer = document.querySelector('#featuring')
 
 	
-	const $home = document.querySelector('#home')
+	
 
 
 	const $modal = document.getElementById('modal')
@@ -173,6 +176,16 @@ fetch('https://randomuser.me/api/')
 	const $modalImage = $modal.querySelector('img')
 	const $modalDescription = $modal.querySelector('p')
 
-	
+	function showModal(){
+		$overlay.classList.add('active')
+		$modal.style.animation = 'modalIn .8s forwards'
+	}
+
+	$hideModal.addEventListener('click', hideModal)
+
+	function hideModal(){
+		$overlay.classList.remove('active')
+		$modal.style.animation = 'modalOut .8s forwards'
+	}
 
 })()
