@@ -114,15 +114,12 @@ fetch('https://randomuser.me/api/')
 		const $html = document.implementation.createHTMLDocument()
 		$html.body.innerHTML = HTMLString
 		return $html.body.children[0]
-	}
-
-	//console.log(videoItemTemplate('src/images/covers/bitcoin.jpg', 'bitcoin'))
-	
-	const $actionContainer = document.querySelector('#action')
+	}	
 
 	function renderMovieList(list, $container){
 
 		//actionList.data.movies
+		$container.children[0].remove()
 		list.forEach((movie) =>{
 			const HTMLString = videoItemTemplate(movie)
 			const movieElement = createTemplate(HTMLString)
@@ -130,28 +127,18 @@ fetch('https://randomuser.me/api/')
 		})
 	}
 
-	//con promesas
+	const $actionContainer = document.querySelector('#action')
+	renderMovieList(actionList.data.movies, $actionContainer)
 
-	/*let terrorList; 
-	getData('https://yts.mx/api/v2/list_movies.json?genre=terror')
-		.then(function(data){
-			console.log('terrorList', data);
-			terrorList = data;
-		})*/
+	const $dramaContainer = document.getElementById('drama')
+	renderMovieList(dramaList.data.movies, $dramaContainer)
 
-
-
-	//selectores:
-
-	//con Jquery:
-		//const $home = $('.home')
-
-	//con js
-	const $dramaContainer = document.getElementById('#action')
 	const $animationContainer = document.querySelector('#animation')
+	renderMovieList(animationList.data.movies, $animationContainer)
 
 
 	const $featuringContainer = document.querySelector('#featuring')
+
 	const $form = document.querySelector('#form')
 	const $home = document.querySelector('#home')
 
