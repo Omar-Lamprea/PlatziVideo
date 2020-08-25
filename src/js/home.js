@@ -102,7 +102,24 @@ fetch('https://randomuser.me/api/')
 
 		}
 	}
-	$form.addEventListener('submit', (event) => {
+
+	const BASE_API = 'https://yts.mx/api/v2/'
+
+	function featuringTemplate(peli){
+		return(
+			`<div class="featuring">
+		        <div class="featuring-image">
+		          <img src="${peli.medium_cover_image}" width="70" height="100" alt="">
+		        </div>
+		        <div class="featuring-content">
+		          <p class="featuring-title">Pelicula encontrada</p>
+		          <p class="featuring-album">${peli.title}/p>
+		        </div>
+		      </div>`
+			)
+	}
+
+	$form.addEventListener('submit', async (event) => {
 		event.preventDefault();
 		$home.classList.add('search-active')
 		$featuringContainer.style.display = 'grid'
@@ -113,11 +130,22 @@ fetch('https://randomuser.me/api/')
 			width: 50,
 		})
 		$featuringContainer.append($loader)
+
+		const data = new FormData($form)
+		const {
+			data:{
+				movies: pelis
+			}
+		} = await getData(`${BASE_API}list_movies.json?limit=1&query_term=${data.get('name')}`)
+		
+		const HTMLString = featuringTemplate(pelis[0])
+		$featuringContainer.innerHTML = HTMLString;
+
 	})
 
-	const actionList = await getData('https://yts.mx/api/v2/list_movies.json?genre=action')
-	const dramaList = await getData('https://yts.mx/api/v2/list_movies.json?genre=drama')
-	const animationList = await getData('https://yts.mx/api/v2/list_movies.json?genre=animation')
+	const actionList = await getData(`${BASE_API}list_movies.json?genre=action`)
+	const dramaList = await getData(`${BASE_API}list_movies.json?genre=drama`)
+	const animationList = await getData(`${BASE_API}list_movies.json?genre=animation`)
 	console.log(actionList, dramaList, animationList)
 
 	function videoItemTemplate(movie){
