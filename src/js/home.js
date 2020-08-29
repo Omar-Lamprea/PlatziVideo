@@ -86,7 +86,16 @@
 			li.classList.add('playlistFriends-item')
 			li.innerHTML = templateUser
 			listFriends.appendChild(li)
+			li.addEventListener('click', showFriendModal)
 
+			function showFriendModal(){
+				$overlay.classList.add('active')
+				$modal.style.animation = 'modalIn .8s forwards'
+				$modalImage.setAttribute('src', u.picture.large)
+				$modalTitle.innerHTML = `${u.name.first} ${u.name.last}`
+				$modalDescription.innerHTML = `City: ${u.location.city} <br> Email: ${u.email} <br> Phone: ${u.phone}`
+
+			}
 		})
 	})
 	.catch(function(error){

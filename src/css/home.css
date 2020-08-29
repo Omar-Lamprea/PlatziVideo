@@ -239,6 +239,9 @@ body {
   margin: 10px;
 }
 
+.description-p{
+  text-align: initial;
+}
 
 .fadeIn {
   animation: 3000ms fadeIn;
