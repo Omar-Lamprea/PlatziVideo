@@ -1,100 +1,117 @@
-console.log('hola mundo!');
-const noCambia = "Leonidas";
+// console.log('hola mundo!');
 
-let cambia = "@LeonidasEsteban"
+// //promesas
 
-function cambiarNombre(nuevoNombre) {
-  cambia = nuevoNombre
-}
+// const getUserAll = new Promise(function(todoBien, todoMal){
+// 	//llamar a un api
+// 	// setInterval() se ejecuta por intervalos de tiempo
+// 	//setTimeout() se ejecuta una sola vez en determinado tiempo
+// 	setTimeout(function(){
+// 		//luego de 3 seg
+// 		//todoBien();
+// 		todoBien('se acabó el tiempo 5')
+// 	}, 5000)
+// })
 
+// const getUser = new Promise(function(todoBien, todoMal){
+	
+// 	setTimeout(function(){
+// 		todoBien('se acabó el tiempo 3')
+// 	}, 3000)
+// })
 
-//promesas
-
-const getUserAll = new Promise(function(todoBien, todoMal){
-	//llamar a un api
-	// setInterval() se ejecuta por intervalos de tiempo
-	//setTimeout() se ejecuta una sola vez en determinado tiempo
-	setTimeout(function(){
-		//luego de 3 seg
-		//todoBien();
-		todoBien('se acabó el tiempo')
-	}, 5000)
-})
-
-const getUser = new Promise(function(todoBien, todoMal){
-	//llamar a un api
-	// setInterval() se ejecuta por intervalos de tiempo
-	//setTimeout() se ejecuta una sola vez en determinado tiempo
-	setTimeout(function(){
-		//luego de 3 seg
-		//todoBien();
-		todoBien('se acabó el tiempo 3')
-	}, 3000)
-})
-
-/*getUser
-	.then(function(){
-		console.log('vamos bien!')
-	})
-	.catch(function (message){
-		console.log(message)
-	})
-*/
-Promise.race([
-	getUser,
-	getUserAll
-])
-.then(function(message){
-	console.log(message)
-})
-.catch(function(message){
-	console.log(message)
-})
+// /*getUser
+// 	.then(function(){
+// 		console.log('vamos bien!')
+// 	})
+// 	.catch(function (message){
+// 		console.log(message)
+// 	})
+// */
+// Promise.all([
+// 	getUser,
+// 	getUserAll
+// ])
+// .then(function(message){
+// 	console.log(message)
+// })
+// .catch(function(message){
+// 	console.log(message)
+// })
 
 
 
-//XMLHttpRequest:
-$.ajax('https://randomuser.me/api/dfgsdg',{
-	method:'GET',
-	success: function(data){
-		console.log(data)
-	},
-	error: function(error){
-		console.log(error)
-	}
-})
+// //XMLHttpRequest:
+// // $.ajax('https://randomuser.me/api/',{
+// // 	method:'GET',
+// // 	success: function(data){
+// // 		console.log(data)
+// // 	},
+// // 	error: function(error){
+// // 		console.log(error)
+// // 	}
+// // })
+
+
 
 //fetch
 
-fetch('https://randomuser.me/api/')
+
+
+
+//funcion Playlist de amigos
+
+
+
+//funcion asíncrona, lista de pelis
+
+(async function load (){
+	fetch('https://randomuser.me/api/?results=10')
 	.then(function(response){
 		//console.log(response)
 		return response.json()
 	})
 	.then(function(user){
-		console.log('user',user.results[0].name.first)
+		const listFriends = document.getElementById('listFriends')
+		user.results.forEach( u => {
+
+			const templateUser = `
+			  <a href="#">
+			    <img src="${u.picture.thumbnail}" />
+			    <span>
+			      ${u.name.first} ${u.name.last}
+			    </span>
+			  </a>`
+			const li = document.createElement('li')
+			li.classList.add('playlistFriends-item')
+			li.innerHTML = templateUser
+			listFriends.appendChild(li)
+
+		})
 	})
-	.catch(function(){
+	.catch(function(error){
 		console.log('algo falló')
 	});
-
-
-
-
-//funcion asíncrona
-
-(async function load (){
 	//await 
 	//generos: action, terror, animation
 	async function getData(url){
-		const response = await fetch(url)
-		const data = await response.json()
-		return data;
+		try{
+			const response = await fetch(url)
+			const data = await response.json()
+			if(data.data.movie_count > 0){
+				//fin de la función si hay peli
+				return data;
+			}
+			// si no hay peli, acá sigue
+			throw new Error('No se encontó ningún resultado')
+		} catch(error){
+			console.error('algo falló')
+		}
 	}
 
 	const $form = document.querySelector('#form')
 	const $home = document.querySelector('#home')
-		const $featuringContainer = document.getElementById('featuring')
+	const $featuringContainer = document.getElementById('featuring')
 
 	function setAttributes($element, attributes){
 		for(const attribute in attributes){
@@ -113,7 +130,7 @@ fetch('https://randomuser.me/api/')
 		        </div>
 		        <div class="featuring-content">
 		          <p class="featuring-title">Pelicula encontrada</p>
-		          <p class="featuring-album">${peli.title}/p>
+		          <p class="featuring-album">${peli.title}</p>
 		        </div>
 		      </div>`
 			)
@@ -132,6 +149,7 @@ fetch('https://randomuser.me/api/')
 		$featuringContainer.append($loader)
 
 		const data = new FormData($form)
+		try {
 		const {
 			data:{
 				movies: pelis
@@ -140,10 +158,15 @@ fetch('https://randomuser.me/api/')
 		
 		const HTMLString = featuringTemplate(pelis[0])
 		$featuringContainer.innerHTML = HTMLString;
+		}catch(error){
+			alert(error.message)
+			$loader.remove()
+			$home.classList.remove('search-active')
+		}
 
 	})
 
-	//console.log(actionList, dramaList, animationList)
+	//creacion de templates para la lista
 
 	function videoItemTemplate(movie, category){
 		return (
@@ -195,6 +218,7 @@ fetch('https://randomuser.me/api/')
 		})
 	}
 
+	//petición API y render templates
 
 	const {data: {movies: actionList} } = await getData(`${BASE_API}list_movies.json?genre=action`)
 	const $actionContainer = document.querySelector('#action')
@@ -211,11 +235,13 @@ fetch('https://randomuser.me/api/')
 	renderMovieList(animationList, $animationContainer, 'animation')
 
 
+	//console.log('actionList: ',actionList, 'dramaList: ',dramaList, 'animationList: ', animationList)
+
+	//modal x peli
 
 	const $modal = document.getElementById('modal')
 	const $overlay = document.getElementById('overlay')
 	const $hideModal = document.getElementById('hide-modal')
-
 
 	const $modalTitle = $modal.querySelector('h1')
 	const $modalImage = $modal.querySelector('img')
