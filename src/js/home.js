@@ -59,13 +59,14 @@
 
 
 
-//funcion Playlist de amigos
 
 
 
 //funcion asíncrona, lista de pelis
 
 (async function load (){
+
+	//funcion Playlist de amigos
 	fetch('https://randomuser.me/api/?results=10')
 	.then(function(response){
 		//console.log(response)
@@ -99,10 +100,45 @@
 		})
 	})
 	.catch(function(error){
-		console.log('algo falló')
+		console.log('algo falló al objener tu lista de amigos')
 	});
-	//await 
-	//generos: action, terror, animation
+
+	//top 10 movies
+	fetch('https://yts.mx/api/v2/list_movies.json?limit=10')
+	.then(function(response){
+		//console.log(response)
+		return response.json()
+	})
+	.then (function (topMovies){
+		const movieList = document.getElementById('topPelis')
+		topMovies.data.movies.forEach(p =>{
+			const templateMovie = `				
+		              <a href="#">
+		                <span>
+		                  ${p.title}
+		                </span>
+		              </a>`
+	       	const li = document.createElement('li')
+	       	li.classList.add('myPlaylist-item')
+	       	li.innerHTML = templateMovie
+	       	movieList.appendChild(li)
+	       	li.addEventListener('click', showMovieModal)
+
+	       	function showMovieModal(){
+	       		overlay.classList.add('active')
+				$modal.style.animation = 'modalIn .8s forwards'
+				$modalTitle.innerHTML = `${p.title}`
+				$modalImage.setAttribute('src', p.medium_cover_image)
+				$modalDescription.textContent = p.description_full
+	       	}
+		})
+		console.log(topMovies.data.movies)
+	})
+	.catch(function(error){
+		console.log('algo falló al obtener el top 10 mejores películas')
+	})
+
+	//traer pelis para mostrar main
 	async function getData(url){
 		try{
 			const response = await fetch(url)
@@ -142,7 +178,7 @@
 		          <p class="featuring-album">${peli.title}</p>
 		        </div>
 		      </div>`
-			)
+		)
 	}
 
 	$form.addEventListener('submit', async (event) => {
@@ -172,7 +208,6 @@
 			$loader.remove()
 			$home.classList.remove('search-active')
 		}
-
 	})
 
 	//creacion de templates para la lista
@@ -229,17 +264,34 @@
 
 	//petición API y render templates
 
-	const {data: {movies: actionList} } = await getData(`${BASE_API}list_movies.json?genre=action`)
+	async function cacheExist(category){
+		const listName = `${category}List`
+		const cacheList = window.localStorage.getItem(listName)
+
+		if(cacheList){
+			return JSON.parse(cacheList)
+		}
+
+		const {data: {movies: data} } = await getData(`${BASE_API}list_movies.json?genre=${category}`)
+		window.localStorage.setItem(listName, JSON.stringify(data))
+		return data
+	}
+
+	//const {data: {movies: actionList} } = await getData(`${BASE_API}list_movies.json?genre=action`)
+	const actionList = await cacheExist('action')
+	//window.localStorage.setItem('actionList', JSON.stringify(actionList))
 	const $actionContainer = document.querySelector('#action')
 	renderMovieList(actionList, $actionContainer, 'action')
 
 
-	const {data: {movies: dramaList} } = await getData(`${BASE_API}list_movies.json?genre=drama`)
+	const dramaList = await cacheExist('drama')
+	//window.localStorage.setItem('dramaList', JSON.stringify(dramaList))
 	const $dramaContainer = document.getElementById('drama')
 	renderMovieList(dramaList, $dramaContainer, 'drama')
 
 
-	const {data: {movies: animationList} } = await getData(`${BASE_API}list_movies.json?genre=animation`)
+	const animationList = await cacheExist('animation')
+	//window.localStorage.setItem('animationList', JSON.stringify(animationList))
 	const $animationContainer = document.querySelector('#animation')
 	renderMovieList(animationList, $animationContainer, 'animation')
 
